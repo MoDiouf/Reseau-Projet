@@ -12,7 +12,7 @@ $stmt = $conn->prepare("SELECT * FROM users WHERE id = :id");
 $stmt->execute(['id' => $user_id]);
 $user = $stmt->fetch();
 
-// Traitement du formulaire d'envoi d'email
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['send_email'])) {
     $to = $_POST['email_to'];
     $subject = $_POST['subject'];
@@ -26,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['send_email'])) {
     }
 }
 
-// Récupérer les e-mails reçus
 $stmt_received = $conn->prepare("SELECT * FROM emails_recus WHERE user_id = :user_id ORDER BY received_at DESC");
 $stmt_received->execute(['user_id' => $user_id]);
 $emails_recus = $stmt_received->fetchAll();
@@ -50,7 +49,6 @@ $emails_recus = $stmt_received->fetchAll();
             </div>
         </div>
         
-        <!-- Formulaire d'envoi d'e-mail -->
         <div class="row justify-content-center mt-5">
             <div class="col-md-6">
                 <div class="card">
@@ -82,7 +80,7 @@ $emails_recus = $stmt_received->fetchAll();
             </div>
         </div>
 
-        <!-- Affichage des e-mails reçus -->
+
         <div class="row justify-content-center mt-5">
             <div class="col-md-8">
                 <div class="card">
