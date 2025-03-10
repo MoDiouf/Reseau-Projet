@@ -11,6 +11,25 @@ $user_id = $_SESSION['user_id'];
 $stmt = $conn->prepare("SELECT * FROM users WHERE id = :id");
 $stmt->execute(['id' => $user_id]);
 $user = $stmt->fetch();
+
+// Traitement du formulaire d'envoi d'email
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['send_email'])) {
+    $to = $_POST['email_to'];
+    $subject = $_POST['subject'];
+    $message = $_POST['message'];
+    $headers = "From: " . $user['email'];
+    
+    if (mail($to, $subject, $message, $headers)) {
+        $success = "E-mail envoyé avec succès.";
+    } else {
+        $error = "Erreur lors de l'envoi de l'e-mail.";
+    }
+}
+
+// Récupérer les e-mails reçus
+$stmt_received = $conn->prepare("SELECT * FROM emails_recus WHERE user_id = :user_id ORDER BY received_at DESC");
+$stmt_received->execute(['user_id' => $user_id]);
+$emails_recus = $stmt_received->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -28,6 +47,71 @@ $user = $stmt->fetch();
                 <a href="upload.php" class="btn btn-primary">Envoyer un fichier</a>
                 <a href="files.php" class="btn btn-secondary">Fichiers reçus</a>
                 <a href="logout.php" class="btn btn-danger">Déconnexion</a>
+            </div>
+        </div>
+        
+        <!-- Formulaire d'envoi d'e-mail -->
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Envoyer un e-mail</div>
+                    <div class="card-body">
+                        <?php if (isset($success)): ?>
+                            <div class="alert alert-success"> <?php echo $success; ?> </div>
+                        <?php endif; ?>
+                        <?php if (isset($error)): ?>
+                            <div class="alert alert-danger"> <?php echo $error; ?> </div>
+                        <?php endif; ?>
+                        <form method="POST">
+                            <div class="mb-3">
+                                <label for="email_to" class="form-label">Destinataire</label>
+                                <input type="email" name="email_to" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="subject" class="form-label">Objet</label>
+                                <input type="text" name="subject" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Message</label>
+                                <textarea name="message" class="form-control" rows="4" required></textarea>
+                            </div>
+                            <button type="submit" name="send_email" class="btn btn-primary w-100">Envoyer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Affichage des e-mails reçus -->
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">E-mails reçus</div>
+                    <div class="card-body">
+                        <?php if (count($emails_recus) > 0): ?>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Expéditeur</th>
+                                        <th scope="col">Objet</th>
+                                        <th scope="col">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($emails_recus as $email): ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($email['sender_email']); ?></td>
+                                            <td><?php echo htmlspecialchars($email['subject']); ?></td>
+                                            <td><?php echo htmlspecialchars($email['received_at']); ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <p>Aucun e-mail reçu.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

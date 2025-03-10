@@ -23,13 +23,14 @@ CREATE TABLE files (
     FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
 );
-CREATE TABLE messages (
-    id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    sender_id INT(11) NOT NULL,
-    receiver_id INT(11) NOT NULL,
-    subject VARCHAR(255) NOT NULL,
-    message TEXT NOT NULL,
-    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+
+CREATE TABLE emails_recus (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    subject VARCHAR(255),
+    message TEXT,
+    sender_email VARCHAR(255),
+    received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
+

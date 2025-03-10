@@ -2,7 +2,7 @@
 $host = 'localhost';
 $dbname = 'smarttech_db';
 $username = 'root';
-$password = 'passer123';
+$password = 'passer';
 
 try {
     $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
