@@ -5,22 +5,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
-    $role = 'client'; // Par défaut, les nouveaux utilisateurs sont des clients
+    $role = 'client'; 
 
-    // Vérifier si l'email existe déjà
+
     $stmt = $conn->prepare("SELECT id FROM users WHERE email = :email");
     $stmt->execute(['email' => $email]);
     $user = $stmt->fetch();
 
     if ($user) {
-        // L'email existe déjà
+
         $error = "Cet email est déjà utilisé. Veuillez en choisir un autre.";
     } else {
-        // L'email n'existe pas, on peut insérer l'utilisateur
+        
         $stmt = $conn->prepare("INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)");
         $stmt->execute(['name' => $name, 'email' => $email, 'password' => $password, 'role' => $role]);
 
-        // Rediriger vers la page de connexion après l'inscription
+        
         header('Location: login.php');
         exit();
     }
